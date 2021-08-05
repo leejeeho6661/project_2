@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- DBCP -->
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close" 
+		p:driverClassName="oracle.jdbc.OracleDriver"
+		p:url="jdbc:oracle:thin:@localhost:1521:xe" 
+		p:username="java"
+		p:password="java" 
+		p:maxTotal="10" 
+		p:maxIdle="5" 
+		p:maxWaitMillis="-1" />
+
+
+	
+	<!-- myBatis -->
+	<bean id="sqlSessionFactory"
+		  class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage"
+			value="com.javateam.project.domain" />
+		<property name="mapperLocations"
+			value="classpath:/mapper/*.xml" />
+		<!-- myBatis 외부 설정 파일 -->	
+		<property name="configLocation" 
+			value="classpath:/config/mybatis-config.xml" />
+			
+		<!-- 
+		<property name="configuration">
+			<bean class="org.apache.ibatis.session.Configuration">
+				<property name="mapUnderscoreToCamelCase" value="true" />
+			</bean>
+		</property>
+		-->
+		<!-- MyBatis date format 문제 해결 -->
+		<!-- <property name="typeHandlersPackage" 
+			value="com.javateam.project.typehandler" /> --> 
+	</bean>
+
+	<bean id="sqlSession"
+		  class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory"
+					     ref="sqlSessionFactory" />
+	</bean>		
+		
+	<context:annotation-config />
+	<!-- AOP ready -->
+    <aop:aspectj-autoproxy />
+
+   
+    <!-- Addtional Trasactional Usage : @Transactional ~~ -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+     <!-- Transaction Advices -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+       <tx:attributes>
+
+		   <tx:method name="writeBoard" propagation="REQUIRED" />
+           <tx:method name="getBoardNumByLastSeq" read-only="true" />
+           
+           <tx:method name="getBoard" read-only="true" />
+           <tx:method name="updateReadCount" propagation="REQUIRED" />
+           
+           <tx:method name="getArticleList" read-only="true" />
+           <tx:method name="getListCount" read-only="true" />
+		   <tx:method name="updateBoard" propagation="REQUIRED" />
+
+       </tx:attributes>
+    </tx:advice>
+    
+    <!-- AOP Transaction config -->
+    <aop:config>
+        <aop:advisor pointcut="execution(* *..BoardService.*(..))"
+                     advice-ref="txAdvice"/>
+    </aop:config>
+      <!-- MyBatis -->
+     <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+         <property name="dataSource" ref="dataSource" />
+     </bean>
+     
+     <bean id="transactionTemplate"
+          class="org.springframework.transaction.support.TransactionTemplate"
+          p:transactionManager-ref="transactionManager" />
+          
+     <!-- Root Context: defines shared resources visible to all other web components -->
+     <!-- Fileupload : 파일 관리자 id(multipartResolver)는 가급적 그대로 사용할 것! -->
+     <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+          <property name="maxUploadSize" value="52428800" />
+          <!-- 파일 크기 제한 : 50MB = 50 * 1024 * 1024-->
+	 <!-- <property name="defaultEncoding" value="UTF-8" /> -->
+          <!-- 요청을 처리시 사용할 인코딩 방식. 기본값 ISO-8859-1 -->
+    </bean>          
+   
+    <!-- File repository : 기사 파일 저장소 -->
+    <bean id="uploadDirResource" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg>
+            <value>D:\LJH_student\works\egov\project\src\main\webapp\resources\article_img\</value>
+        </constructor-arg>
+    </bean>
+    
+    <!-- File repository : 게시판 파일 저장소 -->
+    <bean id="uploadDirResourceBoard" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg>
+           <!--  <value>d:/CJH_JAVA/works/egov/project/src/main/webapp/resources/board_img/</value> -->
+			<value>D:\LJH_student\works\egov\project\src\main\webapp\resources\board_img\</value>
+        </constructor-arg>
+    </bean>
+		
+</beans>

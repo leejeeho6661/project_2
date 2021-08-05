@@ -1,0 +1,15 @@
+@charset "UTF-8";
+#messageArea{
+	max-height: 200px;
+    overflow: auto;
+}
+
+#message{
+	width:247px; 
+    margin-left:18px;
+}
+
+#chatt_img{
+    MARGIN-LEFT: 110PX;
+    MARGIN-BOTTOM: 10PX;
+}

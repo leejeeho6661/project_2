@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javateam.project.mapper.ArticleMapper">
+
+
+<!--  글쓰기 -->
+<insert id="insertArticle" parameterType="ArticleVO">
+insert into article values
+	(
+	  #{boardWriteNum},
+	  #{boardWriteCategory},
+	  #{boardWriteTitle},
+	  #{boardWritePicture},
+	  #{boardWriteWriter},
+	  #{boardWriteArticle},
+	  0,
+	  0,
+	  sysdate
+	 )
+</insert>
+
+<!--  전체 불러오기  -->
+<select id="getArticleNumByLastSeq" resultType="int">
+	select article_seq.nextval from dual
+</select>
+
+
+<!--  기사 목록(페이징) -->
+<select id="getArticleList" resultType="ArticleVO">
+	SELECT * FROM (
+		SELECT 
+			m.*,
+			FLOOR((ROWNUM - 1)/#{rowsPerPage} + 1) page
+		FROM (
+				SELECT * FROM article
+				ORDER BY boardWriteNum DESC
+			 ) m
+		)
+		WHERE page = #{page}
+</select>
+
+<!--  기사 목록(페이징) -->
+<select id="getArticleListByCategory" resultType="ArticleVO">
+	SELECT * FROM (
+		SELECT 
+			m.*,
+			FLOOR((ROWNUM - 1)/#{rowsPerPage} + 1) page
+		FROM (
+				SELECT * FROM article
+				WHERE boardwritecategory = #{boardwritecategory}
+				ORDER BY boardWriteNum DESC
+			 ) m
+		)
+		WHERE page = #{page}
+</select>
+
+<!--  전체 게시글 수 -->
+<select id="getListArticleCount" resultType="int">
+	SELECT COUNT(*) FROM article 
+</select>
+
+<select id="getListArticleCountByCategory" resultType="int">
+	SELECT COUNT(*) FROM article WHERE boardwritecategory = #{boardwritecategory}
+</select>
+
+<!--  기사 조회 -->
+<select id="getArticle" parameterType="int" resultType="ArticleVO">
+	SELECT * FROM article WHERE boardWriteNum = #{boardWriteNum}
+</select>
+
+<!-- 기사 조회수 -->
+<update id="updateReadCountArtice" parameterType="int">
+	UPDATE article SET boardWriteHit = boardWriteHit + 1
+	WHERE boardWriteNum = #{boardWriteNum}
+</update>
+
+
+<!-- 기사 "검색" 조회 -->
+<select id="getArticleBySearch" resultType="ArticleVO">
+ SELECT * FROM (
+ 			SELECT 
+ 				m.*,
+ 				FLOOR((ROWNUM - 1)/#{rowsPerPage} + 1 ) page
+ 			FROM (
+ 				SELECT * FROM article
+ 				<if test="searchKind=='제목'">
+ 				WHERE boardWriteTitle like '%' || #{searchWord} || '%'
+ 				</if>
+ 				<if test="searchKind == '내용'">
+ 				WHERE boardWriteArticle like '%' || #{searchWord} || '%'
+ 				</if>
+ 				ORDER BY boardWriteNum DESC
+ 			) m
+		 )
+		WHERE page = #{page} 
+</select>
+
+<!-- 기사 수정 -->
+<update id="articleUpdate" parameterType="ArticleVO">
+	UPDATE article SET
+		boardWriteCategory = #{boardWriteCategory},
+		boardWriteTitle = #{boardWriteTitle},
+		boardWritePicture = #{boardWritePicture},
+		boardWriteArticle =#{boardWriteArticle},
+		boardInsertDate = sysdate
+	WHERE boardWriteNum = #{boardWriteNum}
+</update> 
+
+<!--  기사 삭제 -->
+<delete id="articleDelete" parameterType="ArticleVO">
+	DELETE article WHERE boardWriteNum = #{boardWriteNum}
+</delete>
+
+<!-- 좋아요 구현 -->
+<insert id="likeInsert" parameterType="LikeVO">
+	INSERT into article_like values(
+		#{userId},
+		#{articleNum},
+		#{userIp}
+	)
+</insert>
+
+<!-- 좋아요 갯수 -->
+<select id="likeCount" parameterType="int" resultType="int">
+	SELECT COUNT(*) FROM article_like
+	WHERE articleNum = #{articleNum}
+</select>
+
+<!-- 내가 좋아요 누른 기사 -->
+<select id="getMyArticle" resultType="MyArticleVO">
+	SELECT * FROM article INNER JOIN 
+	(SELECT * FROM article_like WHERE userid = #{userId}) a_like ON article.boardwritenum = a_like.articlenum
+</select>
+
+<!-- 내가 읽은 기사 표시 -->
+<insert id="readInsert">
+	INSERT into article_read values(
+		#{userId},
+		#{articleNum}
+	)
+</insert>
+
+<!-- 내가 본 기사 가져오기 -->
+<select id="getReadArticle" resultType="MyArticleVO">
+	SELECT * FROM article INNER JOIN 
+	(SELECT * FROM article_read WHERE userid = #{userId})a_read ON article.boardwritenum = a_read.articlenum
+</select>
+</mapper>

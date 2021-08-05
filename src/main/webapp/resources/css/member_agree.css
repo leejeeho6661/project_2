@@ -1,0 +1,27 @@
+@charset "UTF-8";
+input#agree1 { width:25px; height:25px  }
+input#agree4 {  width: 25px; height: 25px; }
+strong{ frot-size: 18px}
+fieldset{ border : 1px solid #ccc}
+legned { position:absolute; left - 9999%; width : 1px; heigth:1px;
+	 overflow : hidden; font-size: 0; line-heigth:0;
+}
+.form-group.row{padding:1% padding-botton:0;}
+
+textarea#bContent {
+    background-color: white;
+}
+.news strong{
+color:gray;
+}
+
+.agree-title{
+margin-top:25px;
+}
+#member_agree{
+margin-top : 43px;
+}
+#member_agree2{
+display : block;
+margin-top : 10px;
+}

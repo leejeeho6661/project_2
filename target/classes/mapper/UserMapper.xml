@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="com.javateam.project.mapper.UserMapper">
+	
+	<select id="getUserByUsername" 
+			resultType="com.javateam.project.domain.Users"
+			parameterType="String">
+		SELECT * FROM users 
+		WHERE username = #{username}
+	</select>
+	
+	<select id="hasUsername" 
+			resultType="int"
+			parameterType="String">
+		SELECT count(*) FROM user
+		WHERE username = #{username}
+	</select>
+	
+	<select id="getUserRolesByUsername" 
+			resultType="Users"
+			parameterType="String">
+		SELECT * FROM user_roles 
+		WHERE username = #{username}
+	</select>
+	
+	<insert id="insertUser" parameterType="com.javateam.project.domain.Users">
+		INSERT INTO users VALUES 
+		(#{users.username}, #{users.password}, #{users.enabled})			
+	</insert>
+	
+	<insert id="insertUserRoles">
+		INSERT INTO user_roles VALUES 
+		(user_roles_seq.nextval, #{username}, #{role})
+	</insert>	
+	
+	<!-- 회원 정보 수정 -->
+	<update id="updateUser">
+		UPDATE users SET password=#{password}
+		WHERE username=#{username}
+	</update>
+	
+	<!-- 회원 정보 삭제 -->
+	<!-- 삭제시 테이블 순서에 유의해야 됩니다 -->
+	<delete id="deleteUser" parameterType="String">
+		{call
+	        declare
+	        begin
+		        DELETE user_roles WHERE username=#{username};
+	            DELETE users WHERE username=#{username};
+	        end
+	    }
+	</delete>
+	
+</mapper>

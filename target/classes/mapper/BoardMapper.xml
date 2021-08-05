@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javateam.project.mapper.BoardMapper">
+
+<!--  게시글 쓰기 -->
+<insert id="writeBoard" parameterType="BoardVO">
+	  <![CDATA[
+	   INSERT INTO board
+	   VALUES
+		(#{board_num},
+		 #{board_title},
+		 sysdate,
+		 #{board_file},
+		 #{board_content},
+		 #{board_name},
+		 #{board_readcount},
+		 #{board_part})
+		]]>
+	</insert>
+
+<!-- 게시글 마지막 시퀀스 번호  -->
+	<select id="getBoardNumByLastSeq" resultType="int">
+		select board_seq.nextval from dual
+	</select>
+
+	<!-- 게시글 목록(페이징) -->
+	<select id="getArticleList" resultType="BoardVO">
+		<!-- SELECT * FROM (
+                    SELECT
+                           m.*,
+                           FLOOR((ROWNUM - 1)/#{rowsPerPage} + 1) page
+                    FROM (
+                             SELECT * FROM board
+                             ORDER BY BOARD_PART ASC, BOARD_NUM DESC
+                      	 ) m
+        )
+     	WHERE page = #{page} -->
+     	SELECT board_num,
+     		   board_title,
+     		   board_date,
+     		   board_file,
+     		   board_content,
+     		   board_name,
+     		   board_readcount,
+     		   board_part,
+     		   (select count(*) from article_comment where ano=board_num) as recnt FROM (
+                    SELECT
+                           m.*,
+                           FLOOR((ROWNUM - 1)/#{rowsPerPage} + 1) page
+                    FROM (
+                             SELECT * FROM board
+                             ORDER BY BOARD_PART ASC, BOARD_NUM DESC
+                      	 ) m
+        )
+     	WHERE page = #{page}
+	</select>
+	
+	<!-- 전체 게시글 수 -->
+	<select id="getListCount" resultType="int">
+		SELECT COUNT(*) FROM board
+	</select>
+	
+	<!-- 게시글 조회 -->
+	<select id="getBoard" parameterType="int" resultType="BoardVO">
+		SELECT * FROM board WHERE board_num=#{board_num}
+	</select>
+	
+	<!-- 게시글 조회수 수정(업데이트) -->
+	<update id="updateReadCount" parameterType="int">
+		UPDATE board SET board_readcount = board_readcount + 1
+		WHERE board_num = #{board_num}
+	</update>
+	
+	<!-- 게시글 수정 -->
+	<update id="updateBoard" parameterType="BoardVO">
+		UPDATE board SET
+			board_part = #{board_part},
+			board_title = #{board_title},
+			board_content = #{board_content},
+			board_file = #{board_file},
+			board_date = sysdate
+		WHERE board_num = #{board_num}
+	</update>
+	
+		<!-- 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		DELETE board WHERE board_num = #{board_num}
+	</delete>
+
+<!-- 게시글 "검색" 조회 -->
+	<select id="getBoardBySearch" resultType="BoardVO">
+		SELECT * FROM (
+                    SELECT
+                           m.*,
+                           FLOOR((ROWNUM - 1)/#{rowsPerPage} + 1) page
+                    FROM (
+                             SELECT * FROM board
+							<if test="searchKind=='제목'">
+							WHERE board_title like '%' || #{searchWord} || '%'
+							</if>
+							<if test="searchKind=='내용'">
+							WHERE board_content like '%' || #{searchWord} || '%'
+							</if>
+                             ORDER BY BOARD_PART ASC, BOARD_NUM DESC
+                      	 ) m
+        )
+     	WHERE page = #{page}
+	</select>
+
+<!-- 공지사항 추출 -->
+<select id="getNotice" resultType="BoardVO">
+	SELECT * FROM board WHERE board_part=0
+</select>
+</mapper>

@@ -1,0 +1,132 @@
+@charset "UTF-8";
+
+.sky_scrapper{
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 44px;
+	height: 100%;
+	z-index: 99999;
+}
+.sky_scrapper .menu {
+    position: relative;
+    top: 0;
+    width: 44px;
+    height: 100%;
+    background-color: gray;
+    text-align: center;
+    color: #fff;
+}
+.sky_scrapper .btn_toggle {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.sky_scrapper .btn_toggle a{
+	cursor: pointer;
+}
+.sky_scrapper #sidebar_icongroub {
+    position: absolute;
+    left: 46%;
+    top: 40%;
+    width: 22px;
+    margin: -180px 0 0 -11px;
+    list-style-type: none;
+}
+.sky_scrapper #sidebar_icongroub span {
+    position: relative;
+    padding: 30px 0;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 1;
+}
+
+
+.sky_scrapper .menu .btn_top {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 44px;
+    border: 0;
+    text-align: center;
+}
+.sky_scrapper .menu .btn_top a{
+	text-decoration:none;
+	color:white;
+}
+.sky_scrapper .cont {
+    position: absolute;
+    top: 0;
+    left: 44px;
+    width: 260px;
+    height: 100%;
+    background-color: #fff;
+    font-size: 12.1px;
+    z-index: 9999;
+}
+#side_icon4 img{
+	
+	width:29px;
+	height:29px;
+}
+span#side_icon4 {
+    left: -3px;
+}
+.noticeA{
+	font-size:1rem;
+}
+#weather_temp{
+	margin-left: 10px;
+}
+.sideNotice{
+	margin: 2rem;
+}
+.sideMyArticle img{
+max-width: 250px;
+}
+.sideReadArticle img{
+max-width: 250px;
+}
+.cont{
+overflow:auto;
+}
+.cont .sideMyArticle{
+overflow:hidden;
+margin-bottom: 50px;
+text-align:center;
+}
+.cont .sideReadArticle{
+overflow:hidden;
+margin-bottom: 50px;
+text-align:center;
+}
+.sideMyArticle p{
+width:200px;
+text-overflow:ellipsis;
+overflow:hidden;
+white-space:nowrap;
+text-align: left;
+}
+.sideReadArticle p{
+width:200px;
+text-overflow:ellipsis;
+overflow:hidden;
+white-space:nowrap;
+text-align: left;
+}
+.noticeA  p{
+width:200px;
+text-overflow:ellipsis;
+overflow:hidden;
+white-space:nowrap;
+}
+#board_notice_img{
+margin: 20px auto;
+}
+#sideReadArticleImg{
+margin: 20px auto;
+}
+#sideMyArticleImg{
+margin: 20px auto;
+}

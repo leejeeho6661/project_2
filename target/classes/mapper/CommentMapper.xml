@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javateam.project.mapper.CommentMapper">
+
+<select id="commentCount" parameterType="int" resultType="int">
+	  SELECT
+            COUNT(*)
+        FROM ARTICLE_COMMENT
+        WHERE ano = #{ano}
+</select>
+
+   <select id="commentList" resultType="CommentVO">
+        SELECT
+            *
+        FROM ARTICLE_COMMENT
+		WHERE ano = #{ano}
+		ORDER BY CNO DESC
+    </select>
+
+ <insert id="commentInsert" parameterType="CommentVO">
+        INSERT INTO
+        ARTICLE_COMMENT (cno, ano, ccontent, writer, cdate)
+        VALUES(#{cno},#{ano},#{ccontent},#{writer},sysdate) 
+    </insert>
+
+<update id="commentUpdate" parameterType="CommentVO">
+        UPDATE ARTICLE_COMMENT
+            SET
+            ccontent = #{ccontent}
+        WHERE cno = #{cno}
+    </update>
+    
+    <delete id="commentDelete" parameterType="int">
+        DELETE FROM ARTICLE_COMMENT WHERE cno = #{cno}
+    </delete>
+    
+    <!-- 게시글 마지막 시퀀스 번호  -->
+	<select id="commentSqLast" resultType="int">
+		select comment_seq.nextval from dual
+	</select>
+</mapper>
+
